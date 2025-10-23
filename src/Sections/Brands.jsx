@@ -4,61 +4,139 @@ import b2 from '../assets/devk assets/dr-logo.svg'
 import b3 from '../assets/devk assets/qiblalogo.svg'
 import b4 from '../assets/devk assets/rockylogo.svg'
 
+// Store brands in an array for cleaner code (DRY principle)
+// This makes it easy to add or remove logos in one place.
+const brandLogos = [
+  { src: b1, alt: 'Amazon' },
+  { src: b2, alt: 'Dr. Logo' }, // Assuming 'dr-logo' is its name
+  { src: b3, alt: 'Qibla Finder' }, // Assuming from 'qiblalogo'
+  { src: b4, alt: 'Rocky' }, // Assuming from 'rockylogo'
+];
+
+/**
+ * Brands Component
+ * Renders a clean, responsive, and infinitely-scrolling marquee
+ * of trusted brand logos.
+ */
 function Brands() {
   return (
     <>
-      {/* This style block contains the necessary CSS for the animation 
-        and is the only non-markup change made to your original file. 
+      {/* This style block contains the CSS for the marquee animation 
+        and the fade-out mask effect.
       */}
       <style>
         {`
-          /* Define the animation keyframes */
-          @keyframes scroll-logos {
-            0% {
-              transform: translateX(0); /* Start at the original position */
-            }
-            100% {
-              /* Move left by the width of one full set of logos (4 logos * 150px/logo = 600px) 
-                 to create a seamless, infinite loop. */
-              transform: translateX(calc(-150px * 4)); 
-            }
+          @keyframes infinite-scroll {
+            from { transform: translateX(0); }
+            /* We animate to -50% because the .animate-marquee container
+              holds two identical sets of logos (width: 200%).
+              Moving it 50% left shifts it by exactly one full set.
+            */
+            to { transform: translateX(-50%); }
           }
 
-          /* Target the outer container to hide the scrolling content */
-          .brands {
-             overflow: hidden; /* **Removes the scrollbar** by hiding content that moves out of bounds */
+          .animate-marquee {
+            display: flex;
+            width: 200%; /* Contains two sets of logos */
+            animation: infinite-scroll 40s linear infinite;
+          }
+
+          /* Pause animation on hover */
+          .animate-marquee:hover {
+            animation-play-state: paused;
+          }
+
+          /* This container provides the 'overflow: hidden' 
+            and the fade-out effect on the edges.
+          */
+          .marquee-container {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            /* CSS Mask for fading edges */
+            -webkit-mask-image: linear-gradient(
+              to right,
+              transparent 0%,
+              black 10%,
+              black 90%,
+              transparent 100%
+            );
+            mask-image: linear-gradient(
+              to right,
+              transparent 0%,
+              black 10%,
+              black 90%,
+              transparent 100%
+            );
           }
           
-          /* Target the inner logos container to apply the animation */
-          .logos {
-            /* This width accommodates all 12 logos (12 * 150px = 1800px) on one line */
-            width: calc(150px * 12 + 11 * 5px); /* Adjusted to include 11 gaps of 5px */
-            /* Apply the animation: 20s duration, linear speed, repeats forever */
-            animation: scroll-logos 20s linear infinite; 
-            /* Your original code already had overflow-auto, we're overriding it via the parent overflow hidden */
-            /* We also remove the overflow-auto utility from the classlist */
+          .logo-set {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            width: 50%; /* Each set takes up 50% of the parent */
+            flex-shrink: 0;
           }
         `}
       </style>
 
-      {/* The brands class now implicitly has 'overflow: hidden' from the style block */}
-      <h3 className='text-center mb-5'>TRUSTED BY AMAZING BRANDS </h3>
-      <div className="brands h-[185px] w-[1280px] bg-[#E6E9ED] m-auto flex justify-center items-center rounded-2xl">
-        
-        {/* The logos class now implicitly has the animation and increased width */}
-        <div className="logos h-[200px] w-[1100px] flex justify-center items-center shrink-0 gap-15 ">
-            <img className='w-[200px]' src={b1} alt="" />
-            <img className='w-[200px]' src={b2} alt="" />
-            <img className='w-[200px]' src={b3} alt="" />
-            <img className='w-[200px]' src={b4} alt="" />
-            <img className='w-[200px]' src={b1} alt="" />
-            <img className='w-[200px]' src={b2} alt="" />
-            <img className='w-[200px]' src={b3} alt="" />
-            <img className='w-[200px]' src={b4} alt="" />
-            <img className='w-[200px]' src={b1} alt="" />
-            <img className='w-[200px]' src={b2} alt="" />
-            <img className='w-[200px]' src={b3} alt="" />
-            <img className='w-[200px]' src={b4} alt="" />
+      {/* Main component wrapper */}
+      <div className="w-full bg-white py-16 sm:py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          
+          {/* Section Title */}
+          <h2 className="text-center text-lg font-semibold leading-8 text-gray-600 tracking-wide uppercase">
+            Trusted by amazing brands
+          </h2>
+          
+          {/* The marquee-container provides the overflow-hidden
+            and the fade-out mask effect.
+          */}
+          <div className="marquee-container mt-12">
+            
+            {/* This div holds *both* sets of logos and is what
+              actually moves.
+            */}
+            <div className="animate-marquee">
+              
+              {/* Set 1: Rendered from the array */}
+              <div className="logo-set">
+                {brandLogos.map((logo, index) => (
+                  <img
+                    key={`logo-set1-${index}`}
+                    className="
+                      max-h-12 w-auto object-contain
+                      grayscale opacity-75
+                      hover:grayscale-0 hover:opacity-100 hover:scale-105
+                      transition-all duration-300 ease-in-out
+                    "
+                    src={logo.src}
+                    alt={logo.alt}
+                  />
+                ))}
+              </div>
+
+              {/* Set 2: An identical copy for the seamless loop.
+                'aria-hidden' is added for accessibility.
+              */}
+              <div className="logo-set" aria-hidden="true">
+                {brandLogos.map((logo, index) => (
+                  <img
+                    key={`logo-set2-${index}`}
+                    className="
+                      max-h-12 w-auto object-contain
+                      grayscale opacity-75
+                      hover:grayscale-0 hover:opacity-100 hover:scale-105
+                      transition-all duration-300 ease-in-out
+                    "
+                    src={logo.src}
+                    alt={logo.alt}
+                  />
+                ))}
+              </div>
+
+            </div>
+          </div>
         </div>
       </div>
     </>
