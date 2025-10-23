@@ -3,6 +3,7 @@ import Navbar from '../Components/Navbar'
 import Hero from '../Sections/Hero'
 import Brands from '../Sections/Brands'
 import Services from '../Sections/Services'
+import Served from '../Sections/Served'
 
 function Home() {
   return (
@@ -14,6 +15,7 @@ function Home() {
         <Hero />
         <Brands />
         <Services />
+        <Served />
       </main>
     </div>
   )
